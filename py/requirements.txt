@@ -1,0 +1,7 @@
+matplotlib
+numpy
+PyAudio
+pyparsing
+torch
+torchvision
+# opencv-python
