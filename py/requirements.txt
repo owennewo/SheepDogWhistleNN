@@ -1,5 +1,7 @@
-matplotlib
-numpy
+wheel
+# OLD version of matplotlib as jetson comes with python 3.6
+matplotlib==3.2.2
+numpy==1.19.3
 PyAudio
 pyparsing
 torch

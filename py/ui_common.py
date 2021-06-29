@@ -85,9 +85,12 @@ class ui_common():
         pa = pyaudio.PyAudio()
         stream = pa.open(format = pyaudio.paInt16,
                         channels = 1,
+                        input_device_index=11,
                         rate = RATE,
                         input = True,
                         frames_per_buffer = CHUNK_SIZE)
+        print(dir(stream))
+        print(stream._format)
         return stream,pa
 
     def get_specgram(self, stream):
@@ -126,6 +129,12 @@ def save_callback(data, count):
 
 def main():
     global ui
+
+
+    p = pyaudio.PyAudio()
+    for i in range(p.get_device_count()):
+        print(p.get_device_info_by_index(i))
+
     ui = ui_common(callback=save_callback)
     ui.start()
     ui.set_title("ddd")
