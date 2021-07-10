@@ -6,4 +6,5 @@ PyAudio
 pyparsing
 torch
 torchvision
-# opencv-python
+# opencv-python]
+keyboard
