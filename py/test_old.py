@@ -1,21 +1,29 @@
 import pyaudio
 import wave
 
-p = pyaudio.PyAudio()
-for i in range(p.get_device_count()):
-    print(i, p.get_device_info_by_index(i)["name"])
  
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = 8000
-CHUNK = 4096
+RATE = 44100
+CHUNK = 5000
 RECORD_SECONDS = 5
-INPUT_DEVICE = 11
- 
+INPUT_DEVICE = 6
+
+p = pyaudio.PyAudio()
+for i in range(p.get_device_count()):
+    name = p.get_device_info_by_index(i)["name"]
+    if "USB" in name: 
+        print("*********")
+        INPUT_DEVICE = i
+    print("FOUND USB mic at input_device_index=", i, p.get_device_info_by_index(i)["name"])
+    # print(p.get_device_info_by_index(i))
+
+
 audio = pyaudio.PyAudio()
  
 # start Recording
-stream = audio.open(format=FORMAT, channels=CHANNELS,
+stream = audio.open(format=FORMAT, 
+                channels=CHANNELS,
                 rate=RATE, input=True,
                 frames_per_buffer=CHUNK,
                 input_device_index=INPUT_DEVICE
@@ -25,6 +33,7 @@ frames = []
  
 for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     data = stream.read(CHUNK)
+    # print(data)
     frames.append(data)
 print("finished recording")
  

@@ -12,24 +12,27 @@ transform = common.get_transform()
 net = common.create_net(True)
 device = common.get_device()
 
-def predict_callback(data, count):
-    filename = f"test/dummy/test.png"        
-    save_image(torch.from_numpy(data),filename)
+def predict_callback(owner, count):
 
-    dataset_loader, _ = common.get_dataloader(transform, 'test')
-    
-    images, labels = next(iter(dataset_loader))
-    # print(images.size())
-    images, labels = images.to(device), labels.to(device)
+    if count%10 == 0:
+        filename = f"test/dummy/test.png"        
+        save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
+                
 
-    images = images.view(1, -1) # torch.Size([1, 784])
-    # print(images.size())
-    outputs = net(images)
+        dataset_loader, _ = common.get_dataloader(transform, 'test')
+        
+        images, labels = next(iter(dataset_loader))
+        # print(images.size())
+        images, labels = images.to(device), labels.to(device)
 
-    label = labels.cpu().detach().numpy()[0]
-    output = outputs.cpu().detach().numpy()[0]
-    class_index = np.argmax(output)
-    ui.set_title(f"prediction = {classes[class_index]}")
+        images = images.view(1, -1) # torch.Size([1, 784])
+        # print(images.size())
+        outputs = net(images)
+
+        label = labels.cpu().detach().numpy()[0]
+        output = outputs.cpu().detach().numpy()[0]
+        class_index = np.argmax(output)
+        ui.set_title(f"prediction = {classes[class_index]}")
 
 def main():
     global classes, ui
@@ -37,8 +40,13 @@ def main():
    
 
     while True:
-        ui = ui_common(callback=predict_callback)
-        ui.start()
 
+                
+        ui = ui_common(callback=predict_callback)
+        # ui = ui_common(example_callback)
+        device_id = ui.find_usb_device()
+        ui.start(device_id)
+
+        
 if __name__ == "__main__":
     main()

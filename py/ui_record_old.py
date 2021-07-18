@@ -4,26 +4,32 @@ from torchvision.utils import save_image
 import torch
 import numpy as np
 
+
 image_classification = None # what image classification are we recording
 image_index = 0
 image_count = 10 # how many images do we want to record
 
 def save_callback(owner, count):
     global image_index, image_classification
-    if count%10 == 0:
-        image_index = image_index + 1
-        filename = f"images/{image_classification}/{count}.png"        
-        ui.set_title(filename)
-                
-        if (image_index > image_count):
-            print(f"we have recorded {image_index - 1} images")
-            ui.close()
-            # plt.close()
-            print("plot closed")  
-        else:
-
-            save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
-            print("saving", image_index, filename, owner.image_data.shape)
+    image_index = image_index + 1
+    filename = f"images/{image_classification}/{count}.png"        
+    ui.set_title(filename)
+            
+    if (image_index > image_count):
+        print(f"we have recorded {image_index - 1} images")
+        ui.close()
+        # plt.close()
+        print("plot closed")  
+    else:
+        # copy = data
+        # print(np.sum(copy))
+        # if np.sum(copy) == 0:
+        #     print("EMPTY ***********************")
+        # cv2.imwrite(filename, data)
+        # save_image(torch.from_numpy(owner.image_data),filename)
+        # save_image(torch.from_numpy(data)/255, filename, nrow=1, normalize=True)
+        print("saving", image_index, filename, owner.image_data.shape)
+        # plt.savefig(filename, figsize=figsize)
 
 def main():
     global image_index, image_classification, image_count, ui
@@ -49,9 +55,8 @@ def main():
         
                 
         ui = ui_common(callback=save_callback)
-        # ui = ui_common(example_callback)
-        device_id = ui.find_usb_device()
-        ui.start(device_id)
+        ui.start()
+        print("?")
         print(f"Done {image_classification}")
 
 if __name__ == "__main__":
