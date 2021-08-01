@@ -8,3 +8,5 @@ torch
 torchvision
 # opencv-python]
 keyboard
+# pycuda
+six

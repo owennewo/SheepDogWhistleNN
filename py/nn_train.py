@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-EPOCHS = 50
+EPOCHS = 25
 
 transform = common.get_transform()
 dataset_loader, _ = common.get_dataloader(transform)
@@ -12,7 +12,8 @@ net = common.create_net(False)
 device = common.get_device()
 
 loss_function = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.003, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.0025
+, momentum=0.8)
 
 # dataset_loader
 
@@ -21,7 +22,7 @@ print("starting")
 
 for epoch in range(EPOCHS):  # loop over the dataset multiple times
 
-    print("######################### epoch")
+    print("######################### epoch", epoch)
 
     running_loss = 0.0
     for i, data in enumerate(dataset_loader, 0):

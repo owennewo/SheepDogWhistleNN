@@ -2,6 +2,7 @@ from matplotlib.mlab import window_hanning,specgram
 import matplotlib.pyplot as plt
 import sounddevice as sd
 import numpy as np  # Make sure NumPy is loaded before it is used in the callback
+
 # assert np  # avoid "imported but unused" message (W0611)
 
 # I can whistle between 500 Hz to 2000 Hz
@@ -11,7 +12,7 @@ MAX_FREQ = SAMPLERATE / 2
 LOW_FREQ = 500 
 HIGH_FREQ = 2000
 SPECGRAM_NFFT = int((IMAGE_SIZE*2 - 1) * MAX_FREQ / (HIGH_FREQ - LOW_FREQ))# this effects how many bins of frequency (specgram y-axis)
-print(SPECGRAM_NFFT)
+print("SPECGRAM_NFFT =", SPECGRAM_NFFT)
 # exit(0)
 SPECGRAM_OVERLAP = 0 # max == NFFT - 1
  
@@ -92,9 +93,6 @@ class ui_common():
         high_index = int(self.image_data.shape[0] * HIGH_FREQ/MAX_FREQ)
         # slicing out the 32x32 image data.  i.e. 500Hz to 2000Hz and last 32 pixels
         self.image_data = self.image_data[low_index:high_index,-32:]
-
-
-        self
         
         if self.initialized:
             self.image.set_array(self.image_data)

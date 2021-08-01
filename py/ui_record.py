@@ -1,4 +1,5 @@
 from ui_common import ui_common
+from matplotlib.pyplot import imsave
 import sys, os
 from torchvision.utils import save_image
 import torch
@@ -10,7 +11,7 @@ image_count = 10 # how many images do we want to record
 
 def save_callback(owner, count):
     global image_index, image_classification
-    if count%10 == 0:
+    if count%3 == 0:
         image_index = image_index + 1
         filename = f"images/{image_classification}/{count}.png"        
         ui.set_title(filename)
@@ -21,8 +22,19 @@ def save_callback(owner, count):
             # plt.close()
             print("plot closed")  
         else:
+            # 3 approaches to saving
 
-            save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
+            # save 1 using save_image (problem seems to have noise - vertical strips)
+            # save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
+            
+            
+            # save 2 using savefig (problem - diffiful to set exact size e.g. 32x32)
+            # owner.ax.set_axis_off()
+            # owner.fig.savefig(filename,bbox_inches='tight', pad_inches=0)
+            
+            # save#3 using imsave (goldilocks!)
+            imsave(filename, arr=np.flip(owner.image_data,0), cmap='gray', format='png')
+
             print("saving", image_index, filename, owner.image_data.shape)
 
 def main():

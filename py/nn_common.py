@@ -18,9 +18,16 @@ HIDDEN2_SIZE = 32
 
 NET_PATH = './whistle_net.pth'
 
+if not torch.cuda.is_available():
+    print("torch says you have no cuda.  Aborting")
+    exit(1)
+
+
+
 class WhistleNet(nn.Module):
     def __init__(self):
         super().__init__()
+
         self.fc1 = nn.Linear(INPUT_SIZE, HIDDEN1_SIZE)
         self.fc2 = nn.Linear(HIDDEN1_SIZE, HIDDEN2_SIZE)
         self.fc3 = nn.Linear(HIDDEN2_SIZE, OUTPUT_SIZE)
@@ -34,7 +41,7 @@ class WhistleNet(nn.Module):
 
 def get_device():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(device)
+    print("device is", device)
     return device
 
 def create_net(load = True):
