@@ -1,80 +1,78 @@
 import os
+import sys
 import torch
-from matplotlib.pyplot import imsave
-
-# os.environ['LD_LIBRARY_PATH']="/usr/local/cuda/lib64"
-# print("setting LD_LIBRARY_PATH")
-print(torch.__version__)
-a = torch.cuda.FloatTensor(2).zero_()
-print(a)
-
-from ui_common import ui_common
-import nn_common as common
+from matplotlib.pyplot import imread, imsave
+from PIL import Image
 import numpy as np
-from torchvision.utils import save_image
-
-
-# PATH="/usr/local/cuda/bin:${PATH}"
-# ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
 
 
 
-if not torch.cuda.is_available():
-    print("torch says you have no cuda.  Aborting")
-    exit(1)
+def augment(filename, shift_x, shift_y):
+    np.set_printoptions(threshold=sys.maxsize)
 
-os.makedirs('test/dummy', exist_ok=True)
+    
 
-transform = common.get_transform()
-net = common.create_net(True)
-device = common.get_device()
+    image = Image.open(filename).convert('L')
+    # image = imread(filename)
+    image = np.asarray(image)
 
-def predict_callback(filename):
+    # shift columns (shift_x)
+    image = np.roll(image, shift_x, axis=1)
+    if shift_x >= 0:
+        image[:,0:shift_x] = 0
+    elif shift_x < 0:
+        image[:,shift_x:] = 0
 
-        filename = f"test/dummy/test.png"        
-        # save 1 using save_image (problem seems to have noise - vertical strips)
-        # save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
-        
-        # save 2 using savefig (problem - diffiful to set exact size e.g. 32x32)
-        # owner.ax.set_axis_off()
-        # owner.fig.savefig(filename,bbox_inches='tight', pad_inches=0)
-        
-        # save#3 using imsave (goldilocks!)
-        imsave(filename, arr=np.flip(owner.image_data,0), cmap='gray', format='png')
-                
+    #shift rows (shift_y) and zero
+    image = np.roll(image, shift_y, axis=0)
+    if shift_y >= 0:
+        image[0:shift_y,:] = 0
+    elif shift_y < 0:
+        image[shift_y:,:] = 0
 
-        dataset_loader, _ = common.get_dataloader(transform, 'test')
-        
-        images, labels = next(iter(dataset_loader))
-        # print(images.size())
-        images, labels = images.to(device), labels.to(device)
+    # print(image)
+    # print(image.shape)
 
-        images = images.view(1, -1) # torch.Size([1, 784])
-        # print(images.size())
-        outputs = net(images)
+    return image
 
-        label = labels.cpu().detach().numpy()[0]
-        output = outputs.cpu().detach().numpy()[0]
-        class_index = np.argmax(output)
-        ui.set_title(f"prediction = {classes[class_index]}")
-        print(class_index)
+def image_valid(image_data, classname):
+    # we want data in central columns
+    if image_data[:,5:-5].max() > 0 and classname != "silence":
+        return True
+    else:
+        return False
+
+def augment_image(folder, classname, filename):
+
+    source_filename = f"{folder}/{classname}/{filename}"
+    source_prefix = filename.split(".")[0]
+    x_range = range(-10, 11)
+    y_range = range(-5, 6)
+    for x in x_range:
+        for y in y_range:
+
+            image_aug = augment(source_filename, x, y)
+            aug_filename = f"augmented/{classname}/{source_prefix}_{x}{y}.png"
+            
+            if image_valid(image_aug, "foo"):
+                print (x, y, aug_filename)
+                imsave(aug_filename, arr=image_aug, cmap='gray', format='png')
+            else:
+                print(f"skipping {aug_filename}")
 
 def main():
-    global classes, ui
-    image_dir = 'images'
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
-    _, classes = common.get_dataloader(transform, image_dir)
-   
 
-    while True:
+    source_folder = "images"
+    # os.mkdir("augmented", exist_ok=True)
+    for class_folder in os.listdir(source_folder):
+        print(class_folder)
+        os.makedirs(f"augmented/{class_folder}", exist_ok=True)
+        for filename in os.listdir(f"{source_folder}/{class_folder}"):
+            print(f" - {class_folder}/{filename}")
+            augment_image(source_folder, class_folder, filename)
 
-                
-        ui = ui_common(callback=predict_callback) 
-        # ui = ui_common(example_callback)
-        device_id = ui.find_usb_device()
-        ui.start(device_id)
-
-        
+        # filename = f"test/dummy/test.png"  
+        # augment_image(filename)            
+            
 if __name__ == "__main__":
     main()
