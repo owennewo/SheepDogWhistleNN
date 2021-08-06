@@ -11,9 +11,9 @@ image_count = 10 # how many images do we want to record
 
 def save_callback(owner, count):
     global image_index, image_classification
-    if count%3 == 0:
-        image_index = image_index + 1
-        filename = f"images/{image_classification}/{count}.png"        
+    if count%3 == 1:
+        image_index = image_index + 2
+        filename = f"images/{image_classification}/extra-{count}.png" 
         ui.set_title(filename)
                 
         if (image_index > image_count):

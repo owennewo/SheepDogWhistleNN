@@ -12,8 +12,7 @@ net = common.create_net(False)
 device = common.get_device()
 
 loss_function = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.0025
-, momentum=0.8)
+optimizer = optim.SGD(net.parameters(), lr=0.0025, momentum=0.8)
 
 # dataset_loader
 
