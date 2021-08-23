@@ -5,10 +5,10 @@ import numpy as np  # Make sure NumPy is loaded before it is used in the callbac
 
 # assert np  # avoid "imported but unused" message (W0611)
 
-# I can whistle between 500 Hz to 2000 Hz
 IMAGE_SIZE = 32
 SAMPLERATE = 8000
 MAX_FREQ = SAMPLERATE / 2
+# I can whistle between 500 Hz to 2000 Hz
 LOW_FREQ = 500 
 HIGH_FREQ = 2000
 SPECGRAM_NFFT = int((IMAGE_SIZE*2 - 1) * MAX_FREQ / (HIGH_FREQ - LOW_FREQ))# this effects how many bins of frequency (specgram y-axis)
@@ -88,11 +88,12 @@ class ui_common():
         self.data_ready = False
         self.image_data,freqs,bins = self.get_specgram(self.frame_buffer)
 
-
+        
         low_index = int(self.image_data.shape[0] * LOW_FREQ/MAX_FREQ)
         high_index = int(self.image_data.shape[0] * HIGH_FREQ/MAX_FREQ)
         # slicing out the 32x32 image data.  i.e. 500Hz to 2000Hz and last 32 pixels
         self.image_data = self.image_data[low_index:high_index,-32:]
+        self.image_data = np.sqrt(self.image_data) * 10
         
         if self.initialized:
             self.image.set_array(self.image_data)

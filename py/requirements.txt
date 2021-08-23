@@ -10,3 +10,4 @@ torchvision
 keyboard
 # pycuda
 six
+serial

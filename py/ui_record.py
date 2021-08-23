@@ -5,15 +5,17 @@ from torchvision.utils import save_image
 import torch
 import numpy as np
 
+np.set_printoptions(threshold = sys.maxsize)
+
 image_classification = None # what image classification are we recording
 image_index = 0
 image_count = 10 # how many images do we want to record
 
 def save_callback(owner, count):
     global image_index, image_classification
-    if count%3 == 1:
+    if count%3 == 0:
         image_index = image_index + 2
-        filename = f"images/{image_classification}/extra-{count}.png" 
+        filename = f"images/{image_classification}/extra-{count}" 
         ui.set_title(filename)
                 
         if (image_index > image_count):
@@ -33,15 +35,17 @@ def save_callback(owner, count):
             # owner.fig.savefig(filename,bbox_inches='tight', pad_inches=0)
             
             # save#3 using imsave (goldilocks!)
-            imsave(filename, arr=np.flip(owner.image_data,0), cmap='gray', format='png')
+            image_data =np.flip(owner.image_data,0).astype(np.int)
+            imsave(f"{filename}.png", image_data, cmap='gray', format='png')
+            np.save(f"{filename}.npy",image_data)
 
-            print("saving", image_index, filename, owner.image_data.shape)
+            print("saving", image_index, filename, image_data.shape)
 
 def main():
     global image_index, image_classification, image_count, ui
 
-    if (len(sys.argv) != 2):
-        print('ui_record.py <image_count>')
+    if (len(sys.argv) < 2):
+        print(f"ui_record.py <image_count> {sys.argv}")
         sys.exit(1)
 
     image_count = int(sys.argv[1])

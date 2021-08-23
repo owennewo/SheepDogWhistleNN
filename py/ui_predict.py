@@ -1,21 +1,36 @@
-import os
+import os, sys
 import torch
 from matplotlib.pyplot import imsave
+from nn_common import NumpyDataset
 
-# os.environ['LD_LIBRARY_PATH']="/usr/local/cuda/lib64"
-# print("setting LD_LIBRARY_PATH")
+
 print(torch.__version__)
-a = torch.cuda.FloatTensor(2).zero_()
-print(a)
 
 from ui_common import ui_common
 import nn_common as common
 import numpy as np
 from torchvision.utils import save_image
 
+import serial_port as comms
+import time
+ports = comms.serial_ports()
+if len(ports) ==0:
+    print("No serial ports, exiting")
+    exit(0)
+print(ports)
+device = "/dev/ttyUSB0"
+if device in ports:
+    print(f"found {device}")
+    comms.connect(device)
+else:
+    print(f"not found {device}")
+    exit(1)
 
-# PATH="/usr/local/cuda/bin:${PATH}"
-# ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+
+dataset = NumpyDataset("augmented",fetch=False)
+labels = dataset.get_labels()
+
+np.set_printoptions(threshold = sys.maxsize)
 
 last_prediction = ""
 same_count = 0
@@ -32,79 +47,46 @@ device = common.get_device()
 
 def predict_callback(owner, count):
     global last_prediction, same_count
-    # print(count, owner.image_data.shape)
-
-    image = torch.from_numpy(np.flip(owner.image_data,0).copy()).to(device).float()
-    # print(image.shape)
-    image = image.view(1, -1)
-    # print(image.shape)
-    outputs = net(image)
-    output = outputs.cpu().detach().numpy()[0]
-    class_index = np.argmax(output)
-    new_prediction = classes[class_index]
-    print(new_prediction)
-
-    # if count%1 == 0:
-    #     filename = f"test/dummy/test.png"        
-    #     # save 1 using save_image (problem seems to have noise - vertical strips)
-    #     # save_image(torch.from_numpy(np.flip(owner.image_data,0).copy()),filename)
-         
-    #     # save 2 using savefig (problem - diffiful to set exact size e.g. 32x32)
-    #     # owner.ax.set_axis_off()
-    #     # owner.fig.savefig(filename,bbox_inches='tight', pad_inches=0)
+    image_data = np.flip(owner.image_data,0).astype(np.int)
         
-    #     # save#3 using imsave (goldilocks!)
-    #     imsave(filename, arr=np.flip(owner.image_data,0), cmap='gray', format='png')
-                
-
-    #     dataset_loader, _ = common.get_dataloader(transform, 'test')
+    if image_data[8:-8,8:-8].max() > 80:
         
-    #     images, labels = next(iter(dataset_loader))
-    #     # print(images.size())
-    #     images, labels = images.to(device), labels.to(device)
-    #     print(images.shape)
-    #     images = images.view(1, -1) # torch.Size([1, 784])
-    #     print(images.shape)
-    #     # print(images.size())
-    #     outputs = net(images)
+        image = torch.from_numpy(image_data.copy()).to(device).float()
+        inputs = image.view(1, -1)
+        outputs = net(inputs)
+        output = outputs.cpu().detach().numpy()[0]
 
-    #     label = labels.cpu().detach().numpy()[0]
-    #     output = outputs.cpu().detach().numpy()[0]
-    #     class_index = np.argmax(output)
-    #     new_prediction = classes[class_index]
-    #     if last_prediction == new_prediction:
-    #         same_count = same_count + 1
-            
-    #     else:
-    #         same_count = 0
-    #         # uncertain new prediction
-    #         ui.set_title("?")
+        label_index = np.argmax(output)
+        new_prediction = labels[label_index]
+        filename = f"images/{count}-{new_prediction}"
+    else:
+        new_prediction = "silence"
+        # return
 
-    #     last_prediction = new_prediction
+    if last_prediction == new_prediction:
+        same_count = same_count + 1
+        
+    else:
+        same_count = 0
+        # uncertain new prediction
+        ui.set_title("?")
 
-    #     if same_count == 1:
-    #         ui.set_title(f"prediction = {new_prediction}")
-    #     elif same_count > 1:
-    #         # only interested in when we have two consecutive reading the same
-    #         ui.set_title(f"")
-    #     print(new_prediction)
+    last_prediction = new_prediction
+
+    if (new_prediction != "silence" and same_count == 1) or (new_prediction == "silence" and same_count == 2):
+        ui.set_title(f"prediction = {new_prediction}")
+        print(new_prediction)
+        comms.move(new_prediction)
+    elif same_count == 0:
+        # only interested in when we have two consecutive reading the same
+        ui.set_title(f"")
 
 def main():
-    global classes, ui
-    image_dir = 'images'
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
-    _, classes = common.get_dataloader(transform, image_dir)
-   
-
-    while True:
-
+    global labels, ui
                 
-        ui = ui_common(callback=predict_callback)
-        # ui = ui_common(example_callback)
-        device_id = ui.find_usb_device()
-        ui.start(device_id)
-
+    ui = ui_common(callback=predict_callback)
+    device_id = ui.find_usb_device()
+    ui.start(device_id)
         
 if __name__ == "__main__":
     main()
