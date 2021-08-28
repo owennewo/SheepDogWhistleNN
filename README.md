@@ -89,4 +89,5 @@ The chassis for this project was 3D printed on an ender 3 pro and designed (by m
  | Wireless module| Waveshare AC8265 Wireless NIC Applicable for Jetson Nano 2.4G | 
  | 3d printed parts| self designed: https://cad.onshape.com/documents/5effdac04ed9d47ae0867bb5/w/ | 24cf03646d6b2ce421ca6f35/e/3224e9efd19fd691a21f32c3|
 
+# 3d Parts
 ![3d chassis](/3d-chassis.png?raw=true "3d chassis")
