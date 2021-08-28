@@ -1,14 +1,16 @@
 ## Sheepdog Whistle NN
 AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs - whistle commands!  This project explores a whistle control mechanism for a (custom) jetbot.
 
-Flat = Forward ![flat](/flat.png?raw=true "Flat") 
-Up = Left ![Up](/up.png?raw=true "Up") 
-Down = Right ![Down](/down.png?raw=true "Down") 
-Click = Back! [Click](/click.png?raw=true "Click") 
-Silence = Stop ![Silence](/silence.png?raw=true "Silence") 
+| Example instance | Label | Command |
+| ----- | ----- | -----| 
+| ![flat](/flat.png?raw=true "Flat") | Flat | Forward | 
+| ![Up](/up.png?raw=true "Up") | Up | Left |
+| ![Down](/down.png?raw=true "Down") | Down | Right |  
+| ![Click](/click.png?raw=true "Click") Click | Back! |  
+| ![Silence](/silence.png?raw=true "Silence") Silence | Stop | 
 
 ## Audio capture
-Code: (py/ui_common.py)
+Code: [py/ui_common.py](py/ui_common.py)
 Microphones typically record at sampling rates up to 44.1KHz.  I'm recording at 8K which allows frequencies up to 4K to be detected.    
 
 The standard representation of sound is typically a time domain graph with amplitude on Y axis and time on x-axis.  Spotting pitch changes is hard for humans (and computers!)
@@ -40,14 +42,14 @@ Originally the images where saved as png files but I switched to npy files as th
 At the end of this process I had recorded about 1000 images in 5 classes (flat, up, down, silence and click).  Some of these samples were poor (bad whistling or whistle was partially out of frame), so the final total was ~500 images
 
 # Sample augmentation
-code: (py/augment.py)
+code: [py/augment.py](py/augment.py)
 500 images is a low number for NN training, so I turned 500 images into 20,000!  This was done by moving the whisle a few pixels left/right and/or up/down to create shifted new images.  This helps 'fill in the gaps' so that the NN generalises to unseen (unheard?) samples.
 
 If you don't want to record/augment your own images you could use the files I created to skip to training step:
 https://drive.google.com/drive/folders/1xyElx27kldVmL93BxWLLImEiT4XyFRHB?usp=sharing
 
 # Training
-code: (py/nn_train.py) and (py/nn_common.py)
+code: [py/nn_train.py](py/nn_train.py) and [py/nn_common.py](py/nn_common.py)
 
 The setup of the NN is done in nn_common.py (which is used by training and prediction)
 We have:
@@ -65,7 +67,7 @@ nn_train.py uses nn_common.py and does the following:
  - the NN was saved as ./whistle_net.pth
 
  # Prediction
- code: (py/ui_predict.py)
+ code: [py/ui_predict.py](py/ui_predict.py)
  The prediction is a combination of using ui_common.py to collect 10fps images and then passing each numpy array to the NN (whistl_net.pth) for prediction.   The output of the NN is 5 values - representing how much of a match the sample was against each of the 5 labels.  argmax is used to pick out the label with the highest score and thus the prediction is made.
 
  Once a prediction is made it is 'debounced' a little i.e. we need at least two samples in a row to confirm a prediction. The prediction is then sent using py/serial_port.py to the micro controller to the storm32 stm32/arduino board which is the BLDC motor controller.
