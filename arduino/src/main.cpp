@@ -162,17 +162,6 @@ void loop() {
   static long last = 0;
   long now = millis();
 
-  // if (remote.readData()) {
-  //       steer = remote.data.x2;
-  //       speed = remote.data.y2;
-
-  //       Left =  (speed + steer);
-  //       Right = (speed - steer);
-
-  //       Serial.print(Left); Serial.print("\t");
-  //       Serial.println(Right);
-  // }
-
   if (now - last > 200) {
     Serial.print(".");
     last = now;
