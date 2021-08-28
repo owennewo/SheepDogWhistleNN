@@ -41,10 +41,10 @@ Originally the images where saved as png files but I switched to npy files as th
 At the end of this process I had recorded about 1000 images in 5 classes (flat, up, down, silence and click).  Some of these samples were poor (bad whistling or whistle was partially out of frame), so the final total was ~500 images
 
 ![flat](/flat.png?raw=true "Flat") Flat = Forward
-![Up](/left.png?raw=true "Up") Up = Left
-![Down](/right.png?raw=true "Down") Down = Right
+![Up](/up.png?raw=true "Up") Up = Left
+![Down](/down.png?raw=true "Down") Down = Right
 ![Click](/click.png?raw=true "Click") Click = Back
-![Silence](/stop.png?raw=true "Silence") Silence = Stop
+![Silence](/silence.png?raw=true "Silence") Silence = Stop
 
 
 # Sample augmentation
