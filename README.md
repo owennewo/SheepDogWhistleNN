@@ -40,6 +40,13 @@ Originally the images where saved as png files but I switched to npy files as th
 
 At the end of this process I had recorded about 1000 images in 5 classes (flat, up, down, silence and click).  Some of these samples were poor (bad whistling or whistle was partially out of frame), so the final total was ~500 images
 
+![flat](/flat.png?raw=true "Flat") Flat = Forward
+![Up](/flat.png?raw=true "Up") Up = Left
+![Down](/flat.png?raw=true "Down") Down = Right
+![Click](/flat.png?raw=true "Click") Click = Back
+![Silence](/flat.png?raw=true "Silence") Silence = Stop
+
+
 # Sample augmentation
 code: py/augment.py
 500 images is a low number for NN training, so I turned 500 images into 20,000!  This was done by moving the whisle a few pixels left/right and/or up/down to create shifted new images.  This helps 'fill in the gaps' so that the NN generalises to unseen (unheard?) samples.
