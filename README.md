@@ -1,13 +1,13 @@
 ## Sheepdog Whistle NN
-AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs - whistle commands!  This project explores a whistle control mechanism for a (custom) jetbot.
+AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs - whistle commands!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) Nano as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
 
 | Example instance | Label | Command |
 | ----- | ----- | -----| 
 | ![flat](/flat.png?raw=true "Flat") | Flat | Forward | 
 | ![Up](/up.png?raw=true "Up") | Up | Left |
 | ![Down](/down.png?raw=true "Down") | Down | Right |  
-| ![Click](/click.png?raw=true "Click") Click | Back! |  
-| ![Silence](/silence.png?raw=true "Silence") Silence | Stop | 
+| ![Click](/click.png?raw=true "Click") | Click | Back! |  
+| ![Silence](/silence.png?raw=true "Silence") | Silence | Stop | 
 
 ## Audio capture
 Code: [py/ui_common.py](py/ui_common.py)
@@ -78,13 +78,15 @@ nn_train.py uses nn_common.py and does the following:
  The code uses the SimpleFOC library to manage the complex 3phase FOC control.  I have a lot of experience with this library on other projects and recommend it!
 
 The chassis for this project was 3D printed on an ender 3 pro and designed (by me) using onshape.  The hardware includes:
- - jetson nano 4GB - mounted above chassis plate
- - storm32 - mounted below chassis plate
- - 2x turnigy ax-2804 100T BLDC motors
- - Battery: turnigy 1C Transmitter pack (11.1V 2650mAH)
- - Buck converter (Input DC 9-24V, output 5.2V/6A)
- - Old Logitech USB Microphone for WII singalong game (tried the button microphones but could only sample at 44.1Khz)
- - Wireless module: Waveshare AC8265 Wireless NIC Applicable for Jetson Nano 2.4G
- - 3d printed parts: https://cad.onshape.com/documents/5effdac04ed9d47ae0867bb5/w/24cf03646d6b2ce421ca6f35/e/3224e9efd19fd691a21f32c3
+ | Part | Description |
+ | ----- | ----- |
+ | jetson nano 4GB | mounted above chassis plate
+ | motor controller | storm32 mounted below chassis plate | 
+ | motors | 2x turnigy ax-2804 100T BLDC motors | 
+ | Battery | turnigy 1C Transmitter pack (11.1V 2650mAH) | 
+ | Buck converter | (Input DC 9-24V, output 5.2V/6A) | 
+ | Micophone | Old Logitech USB Microphone for WII singalong game (tried the button microphones but could only sample at 44.1Khz) |
+ | Wireless module| Waveshare AC8265 Wireless NIC Applicable for Jetson Nano 2.4G | 
+ | 3d printed parts| self designed: https://cad.onshape.com/documents/5effdac04ed9d47ae0867bb5/w/ | 24cf03646d6b2ce421ca6f35/e/3224e9efd19fd691a21f32c3|
 
 ![3d chassis](/3d-chassis.png?raw=true "3d chassis")
