@@ -1,7 +1,8 @@
 # Sheepdog Whistle NN
+## Overview
 AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) Nano as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
 
-This project has been submitted to the [Jetson AI Specialist Certification](https://developer.nvidia.com/embedded/learn/jetson-ai-certification-programs)
+A pytorch neural net is trained with the following image labels.  
 
 | Example instance | Label | Command |
 | ----- | ----- | -----| 
@@ -11,10 +12,16 @@ This project has been submitted to the [Jetson AI Specialist Certification](http
 | ![Click](/click.png?raw=true "Click") | Click | Back! |  
 | ![Silence](/silence.png?raw=true "Silence") | Silence | Stop | 
 
+Live Predictions against this model are then interpretted as a sequence of command which are sent to a 3 wheel self-built 'jetbot'.  A flat whistle sends the bot forward, a rising whistle turns it to the left, a tongue click will send it backwards.
+
+This project has been submitted to the [Jetson AI Specialist Certification](https://developer.nvidia.com/embedded/learn/jetson-ai-certification-programs)
+
 ## Audio capture
 Code: [py/ui_common.py](py/ui_common.py)
 Microphones typically record at sampling rates up to 44.1KHz.  I'm recording at 8K which allows frequencies up to 4K to be detected.    
 
+| Representation | Image | Description |
+| ----- | ----- |----- |
 | Time domain| ![Time domain](time-domain.png) | The standard representation of sound is typically a time domain graph with amplitude on y-axis and time on x-axis.  The image on the left has a flat, up, down, click and silent samples but it is difficult for humans and NNs to differentiate |
 | Frequency domain | ![Frequency domain](frequency-domain.png) | An alternative representation is frequency domain with amplitude on Y axis and frequency on x-axis.  Unfortunately this is a point-in-time representation making changing pitch difficult to determine. |
 | Spectrogram | ![Spectrogram](spectrogram.png) | The approach taken in this project is to use a spectrogram which is a type of heatmap i.e. it can show 3 data series.  In my case we have frequency on y-axis, time on x-axis and amplitude is denoted by the color.  This is really intuitive to humans and also straightforward for a NN to process.  As whistling is typically single frequency (few harmonics) we see a single line moving on graph and can easily identify rising falling frequency.  The tongue click is a wide spectrum noise so we see a vertical line across all frequencies.  |
