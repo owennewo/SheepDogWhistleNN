@@ -1,7 +1,7 @@
 # Sheepdog Whistle NN
 ## Youtube Video
 
-[![Sheepdog Whistle NN](https://img.youtube.com/vi/YnogVYTpyWo/0.jpg)](https://www.youtube.com/watch?v=YnogVYTpyWo)
+[![Sheepdog Whistle NN](gh_images/thumbnail.png)](https://www.youtube.com/watch?v=YnogVYTpyWo)
 
 ## Overview
 AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson Nano](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
