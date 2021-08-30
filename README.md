@@ -1,4 +1,8 @@
 # Sheepdog Whistle NN
+## Youtube Video
+
+[![Sheepdog Whistle NN](https://img.youtube.com/vi/YnogVYTpyWo/0.jpg)](https://www.youtube.com/watch?v=YnogVYTpyWo)
+
 ## Overview
 AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson Nano](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
 
@@ -6,11 +10,11 @@ A pytorch neural net is trained with the following image labels.
 
 | Example instance | Label | Command |
 | ----- | ----- | -----| 
-| ![flat](/flat.png?raw=true "Flat") | Flat | Forward | 
-| ![Up](/up.png?raw=true "Up") | Up | Left |
-| ![Down](/down.png?raw=true "Down") | Down | Right |  
-| ![Click](/click.png?raw=true "Click") | Click | Back! |  
-| ![Silence](/silence.png?raw=true "Silence") | Silence | Stop | 
+| ![flat](gh_images//flat.png?raw=true "Flat") | Flat | Forward | 
+| ![Up](gh_images//up.png?raw=true "Up") | Up | Left |
+| ![Down](gh_images//down.png?raw=true "Down") | Down | Right |  
+| ![Click](gh_images//click.png?raw=true "Click") | Click | Back! |  
+| ![Silence](gh_images//silence.png?raw=true "Silence") | Silence | Stop | 
 
 Live Predictions against this model are then interpretted as a sequence of command which are sent to a 3 wheel self-built 'jetbot'.  A flat whistle sends the bot forward, a rising whistle turns it to the left, a tongue click will send it backwards.
 
@@ -23,9 +27,9 @@ Microphones typically record at sampling rates up to 44.1KHz.  I'm recording at 
 
 | Representation | Image | Description |
 | ----- | ----- |----- |
-| Time domain| ![Time domain](time-domain.png) | The standard representation with amplitude (y-axis) against time (x-axis).  It is impossible to to determine that The image on the left contains  flat, up, down, click and silent samples. Unsuitable! |
-| Frequency domain | ![Frequency domain](frequency-domain.png) | An alternative representation is frequency domain with amplitude (Y axis) against frequency (x-axis).  This is a point-in-time representation making changing pitch difficult to determine. Unsuitable! |
-| Spectrogram | ![Spectrogram](spectrogram.png) | The chosen representation taken in this project is to use a spectrogram which is a type of heatmap i.e. it can show 3 variables.  Here we have frequency (y-axis) against time (x-axis) with amplitude denoted by color.  Humans and NNs can readily detect whistles represented this way, the diagram to the left is a rising pitch which has been mapped to a 'turn left' command.  Suitable!  |
+| Time domain| ![Time domain](gh_images/time-domain.png) | The standard representation with amplitude (y-axis) against time (x-axis).  It is impossible to to determine that The image on the left contains  flat, up, down, click and silent samples. Unsuitable! |
+| Frequency domain | ![Frequency domain](gh_images/frequency-domain.png) | An alternative representation is frequency domain with amplitude (Y axis) against frequency (x-axis).  This is a point-in-time representation making changing pitch difficult to determine. Unsuitable! |
+| Spectrogram | ![Spectrogram](gh_images/spectrogram.png) | The chosen representation taken in this project is to use a spectrogram which is a type of heatmap i.e. it can show 3 variables.  Here we have frequency (y-axis) against time (x-axis) with amplitude denoted by color.  Humans and NNs can readily detect whistles represented this way, the diagram to the left is a rising pitch which has been mapped to a 'turn left' command.  Suitable!  |
 
 With the basics out of the way - I've used a few tricks to make things simpler for the NN.  
 1) The heatmap is set to grayscale.  The image is therefore 2 dimensional instead of 3 (no separate RGB channels).
@@ -51,7 +55,10 @@ At the end of this process I had recorded about 1000 images in 5 classes (flat, 
 ## Sample augmentation
 code: [py/augment.py](py/augment.py)
 
-500 images is a low number for NN training, so I turned 500 images into 20,000!  This was done by moving the whisle a few pixels left/right and/or up/down to create shifted new images.  This helps 'fill in the gaps' so that the NN generalises to unseen (unheard?) samples.
+500 images is a low number for NN training, so I turned 500 images into 20,000!  This was done by moving the whisle a few pixels left/right and/or up/down to create shifted new images.  
+![augment](gh_images//augment.png?raw=true "augment")
+
+This helps 'fill in the gaps' so that the NN generalises to unseen (unheard?) samples.
 
 My raw and augmented images can be found here, if you want to skip sample capture/labeling/augmentation:
 https://drive.google.com/drive/folders/1xyElx27kldVmL93BxWLLImEiT4XyFRHB?usp=sharing
@@ -92,7 +99,7 @@ nn_train.py uses nn_common.py and does the following:
 
 The chassis for this project was 3D printed on an ender 3 pro and designed (by me) using onshape.  
 
-![3d chassis](/3d-chassis.png?raw=true "3d chassis")
+![3d chassis](gh_images/3d-chassis.png?raw=true "3d chassis")
 
 ## Other components
  | Part | Description |
