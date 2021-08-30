@@ -25,13 +25,12 @@ Microphones typically record at sampling rates up to 44.1KHz.  I'm recording at 
 | ----- | ----- |----- |
 | Time domain| ![Time domain](time-domain.png) | The standard representation with amplitude (y-axis) against time (x-axis).  It is impossible to to determine that The image on the left contains  flat, up, down, click and silent samples. Unsuitable! |
 | Frequency domain | ![Frequency domain](frequency-domain.png) | An alternative representation is frequency domain with amplitude (Y axis) against frequency (x-axis).  This is a point-in-time representation making changing pitch difficult to determine. Unsuitable! |
-| Spectrogram | ![Spectrogram](spectrogram.png) | The chosen representation taken in this project is to use a spectrogram which is a type of heatmap i.e. it can show 3 variables.  Here we have frequency (y-axis) against time (x-axis) with amplitude denoted by color.  Humans and NNs can readily detect whistles represented this way.  Suitable!  |
+| Spectrogram | ![Spectrogram](spectrogram.png) | The chosen representation taken in this project is to use a spectrogram which is a type of heatmap i.e. it can show 3 variables.  Here we have frequency (y-axis) against time (x-axis) with amplitude denoted by color.  Humans and NNs can readily detect whistles represented this way, the diagram to the left is a rising pitch which has been mapped to a 'turn left' command.  Suitable!  |
 
 With the basics out of the way - I've used a few tricks to make things simpler for the NN.  
-1) The heatmap is set to grayscale.  The image is therefore 2 dimensional instead of 3 (no RGB channel).
+1) The heatmap is set to grayscale.  The image is therefore 2 dimensional instead of 3 (no separate RGB channels).
 2) The frequencies are cropped to only to between 500Hz and 2KHz as this is the frequency I can whistle at.  This also filters out low frequency background noise
-
-3) I've 'binned' the frequencies into 32 bands.  I've also adjusted frame buffer to 32.  This results in an image of 32x32 pixels
+3) I've 'binned' the frequencies into 32 bands.  I've also adjusted frame buffer to 32.  This results in an image of 32x32 pixels.  Smaller images train faster.
 
 ui_common.py (which does the above) also displays these images at ~10fps using matplot lib and is the base class to ui_record.py and ui_predicy.py (see below)
 
@@ -41,7 +40,7 @@ code: (py/ui_record.py)
 This python is used to capture and label whistle images.  Example usage
  1. ui_record.py 100 (start capture - capturing 100 images per label category)
  2. Loop - enter name of label (e.g. label='flat_pitch')
-  a. capture 100 images with user whistling flat
+  a. capture 100 images with user whistling in accordance with the label
   b. save images in label folder (e.g. images/flat_pitch/1.npy)
  3. Repeat loop or end
 
@@ -54,7 +53,7 @@ code: [py/augment.py](py/augment.py)
 
 500 images is a low number for NN training, so I turned 500 images into 20,000!  This was done by moving the whisle a few pixels left/right and/or up/down to create shifted new images.  This helps 'fill in the gaps' so that the NN generalises to unseen (unheard?) samples.
 
-If you don't want to record/augment your own images you could use the files I created to skip to training step:
+My raw and augmented images can be found here, if you want to skip sample capture/labeling/augmentation:
 https://drive.google.com/drive/folders/1xyElx27kldVmL93BxWLLImEiT4XyFRHB?usp=sharing
 
 ## Training
@@ -80,15 +79,22 @@ nn_train.py uses nn_common.py and does the following:
 
  The prediction is a combination of using ui_common.py to collect 10fps images and then passing each numpy array to the NN (whistl_net.pth) for prediction.   The output of the NN is 5 values - representing how much of a match the sample was against each of the 5 labels.  argmax is used to pick out the label with the highest score and thus the prediction is made.
 
- Once a prediction is made it is 'debounced' a little i.e. we need at least two samples in a row to confirm a prediction. The prediction is then sent using py/serial_port.py to the micro controller to the storm32 stm32/arduino board which is the BLDC motor controller.
+ Once a prediction is made it is 'debounced' a little i.e. we need at least two same predictions in a row to confirm a prediction. The prediction is then sent using py/serial_port.py to the micro controller to the storm32 stm32/arduino board which is the BLDC motor controller.
 
  ## Storm32 control
  code: (arduino/src/main.cpp)
 
- The storm32 controller is an affordable (£25) 3 axis bldc motor control board with a powerful stm32f103 mcu on board.  It is usually used in 3-axis gimbal setups but here I'm using it to drive two turnigy ax-2804 100T motors which have great slow speed control.  The motors are controlled open-loop, the robot would move far smoother if I added some magnetic sensor (e.g. cheap as5600) to close the velocity loop.  
+ The storm32 controller is an affordable (£25) 3 axis bldc motor control board with a powerful stm32f103 mcu on board.  It is usually used in 3-axis gimbal setups but here I'm using it to drive two turnigy ax-2804 100T motors which have great slow speed torque.  The motors are controlled open-loop, the robot would move far smoother if I added some magnetic sensor (e.g. as5600) to close the velocity loop but this would have added cost/complexity.  
  The code uses the SimpleFOC library to manage the complex 3phase FOC control.  I have a lot of experience with this library on other projects and recommend it!
 
-The chassis for this project was 3D printed on an ender 3 pro and designed (by me) using onshape.  The hardware includes:
+# Hardware
+## 3D printed parts
+
+The chassis for this project was 3D printed on an ender 3 pro and designed (by me) using onshape.  
+
+![3d chassis](/3d-chassis.png?raw=true "3d chassis")
+
+## Other components
  | Part | Description |
  | ----- | ----- |
  | jetson nano 4GB | mounted above chassis plate
@@ -98,7 +104,3 @@ The chassis for this project was 3D printed on an ender 3 pro and designed (by m
  | Buck converter | (Input DC 9-24V, output 5.2V/6A) | 
  | Micophone | Old Logitech USB Microphone for WII singalong game (tried the button microphones but could only sample at 44.1Khz) |
  | Wireless module| Waveshare AC8265 Wireless NIC Applicable for Jetson Nano 2.4G | 
- | 3d printed parts| self designed: https://cad.onshape.com/documents/5effdac04ed9d47ae0867bb5/w/ | 24cf03646d6b2ce421ca6f35/e/3224e9efd19fd691a21f32c3|
-
-## 3d Parts
-![3d chassis](/3d-chassis.png?raw=true "3d chassis")
