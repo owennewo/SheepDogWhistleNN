@@ -45,7 +45,7 @@ class ui_common():
         for index, device in enumerate(devices):
             name = device["name"]
             print(index, device["name"])
-            if "USB" in name:
+            if "default" in name:
                 print("found", index, device["name"])
                 return index
         print ("Found no sound devices matching USB")
@@ -102,7 +102,7 @@ class ui_common():
             print("initializing specgram", self.image_data.shape, freqs[-1], bins[-1])
             extent = (bins[0],bins[-1]*MAX_CHUNKS,HIGH_FREQ, LOW_FREQ) #freqs[-1],freqs[0])
             self.image = self.ax.imshow(self.image_data, 
-                                cmap='gray',
+                                cmap='jet',
                                 aspect='auto',
                                 extent=extent)
             self.initialized = True
