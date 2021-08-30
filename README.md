@@ -1,6 +1,6 @@
 # Sheepdog Whistle NN
 ## Overview
-AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) Nano as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
+AI Autonomous vehicles are great but sometimes humans want to influence the robot in the same way that shepherds influence their sheepdogs!  This project explores a whistle control mechanism for a (custom build) jetbot using a [Jetson Nano](https://developer.nvidia.com/embedded/jetson-nano-developer-kit) as the brains and a [Storm32](http://www.olliw.eu/storm32bgc-wiki/Getting_Started) motor controller as the control board.
 
 A pytorch neural net is trained with the following image labels.  
 
@@ -35,7 +35,7 @@ With the basics out of the way - I've used a few tricks to make things simpler f
 ui_common.py (which does the above) also displays these images at ~10fps using matplot lib and is the base class to ui_record.py and ui_predicy.py (see below)
 
 ## Audio Recording / Collecting labelled samples
-code: (py/ui_record.py)
+code: [py/ui_record.py](py/ui_record.py)
 
 This python is used to capture and label whistle images.  Example usage
  1. ui_record.py 100 (start capture - capturing 100 images per label category)
@@ -82,7 +82,7 @@ nn_train.py uses nn_common.py and does the following:
  Once a prediction is made it is 'debounced' a little i.e. we need at least two same predictions in a row to confirm a prediction. The prediction is then sent using py/serial_port.py to the micro controller to the storm32 stm32/arduino board which is the BLDC motor controller.
 
  ## Storm32 control
- code: (arduino/src/main.cpp)
+ code: [arduino/src/main.cpp](arduino/src/main.cpp)
 
  The storm32 controller is an affordable (£25) 3 axis bldc motor control board with a powerful stm32f103 mcu on board.  It is usually used in 3-axis gimbal setups but here I'm using it to drive two turnigy ax-2804 100T motors which have great slow speed torque.  The motors are controlled open-loop, the robot would move far smoother if I added some magnetic sensor (e.g. as5600) to close the velocity loop but this would have added cost/complexity.  
  The code uses the SimpleFOC library to manage the complex 3phase FOC control.  I have a lot of experience with this library on other projects and recommend it!
